@@ -1,6 +1,6 @@
 mod sync;
 #[cfg(feature = "online")]
-mod async;
+pub mod async;
 
 use std::collections::BTreeMap;
 

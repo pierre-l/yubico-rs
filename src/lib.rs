@@ -16,6 +16,7 @@ extern crate sha1;
 extern crate threadpool;
 #[macro_use] extern crate bitflags;
 extern crate subtle;
+#[cfg(feature = "online-tokio")]
 extern crate futures;
 
 #[cfg(feature = "usb")]
@@ -28,7 +29,7 @@ pub mod config;
 pub mod configure;
 pub mod yubicoerror;
 #[cfg(any(feature = "online", feature = "online-tokio"))]
-mod online;
+pub mod online;
 
 use aes::block_cipher_trait::generic_array::GenericArray;
 

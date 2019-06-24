@@ -1,5 +1,5 @@
 
-#[cfg(feature = "online")]
+#[cfg(any(feature = "online", feature = "online-tokio"))]
 extern crate reqwest;
 
 use std::error;
