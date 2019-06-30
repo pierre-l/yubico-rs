@@ -1,12 +1,13 @@
 #![recursion_limit="128"]
+extern crate yubico_online;
 extern crate futures;
 extern crate tokio;
+
 use futures::future::Future;
-use yubico::verify_async;
-extern crate yubico;
+use yubico_online::verify_async;
 
 use std::io::stdin;
-use yubico::config::Config;
+use yubico_online::config::Config;
 
 fn main() {
     println!("Please plug in a yubikey and enter an OTP");

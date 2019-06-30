@@ -1,6 +1,23 @@
-mod sync;
-#[cfg(feature = "online")]
-mod async;
+extern crate base64;
+#[cfg(feature = "online-tokio")]
+extern crate futures;
+extern crate crypto_mac;
+extern crate hmac;
+extern crate rand;
+extern crate reqwest;
+extern crate sha1;
+extern crate subtle;
+
+extern crate threadpool;
+#[macro_use] extern crate url;
+extern crate core;
+
+#[cfg(feature = "online-tokio")]
+pub mod async;
+pub mod yubicoerror;
+pub mod config;
+mod sec;
+pub mod sync;
 
 use std::collections::BTreeMap;
 
@@ -9,15 +26,15 @@ use rand::distributions::Alphanumeric;
 use rand::Rng;
 use rand::rngs::OsRng;
 use url::percent_encoding::{SIMPLE_ENCODE_SET, utf8_percent_encode};
-
-use ::sec;
 use yubicoerror::YubicoError;
-
-use crate::Result;
-
-pub use online::sync::verify;
-pub use online::async::verify_async;
 use config::Config;
+
+pub use sync::verify;
+#[cfg(feature = "online-tokio")]
+pub use async::verify_async;
+
+
+type Result<T> = ::std::result::Result<T, YubicoError>;
 
 define_encode_set! {
     /// This encode set is used in the URL parser for query strings.
