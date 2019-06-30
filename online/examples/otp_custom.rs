@@ -1,7 +1,7 @@
-extern crate yubico;
+extern crate yubico_online;
 
-use yubico::verify;
-use yubico::config::*;
+use yubico_online::verify;
+use yubico_online::config::*;
 
 fn main() {
    let config = Config::default()
