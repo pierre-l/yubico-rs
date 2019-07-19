@@ -1,7 +1,7 @@
 use futures::Future;
 use futures::Stream;
-use reqwest::async::Client;
-use reqwest::header::USER_AGENT;
+use reqwest::async::{Client, ClientBuilder};
+use reqwest::header::{USER_AGENT, HeaderMap, HeaderValue};
 
 use ::{Result, build_request};
 use config::Config;
@@ -10,7 +10,7 @@ use std::sync::Arc;
 
 pub fn verify_async<S>(otp: S, config: Config) -> Result<impl Future<Item=(), Error=YubicoError>>
     where S: Into<String> {
-    AsyncVerifier::new(config)
+    AsyncVerifier::new(config)?
         .verify(otp)
 }
 
@@ -20,11 +20,25 @@ pub struct AsyncVerifier {
 }
 
 impl AsyncVerifier {
-    pub fn new(config: Config) -> AsyncVerifier {
-        AsyncVerifier {
-            client: Client::new(),
+    pub fn new(config: Config) -> Result<AsyncVerifier> {
+        let mut headers = HeaderMap::new();
+        let value = HeaderValue::from_str(&config.user_agent)
+            .map_err(|_err| {
+                YubicoError::InvalidUserAgent
+            })?;
+        headers.insert(USER_AGENT, value);
+
+        let client = ClientBuilder::new()
+            .default_headers(headers)
+            .build()
+            .map_err(|err|{
+                YubicoError::HTTPClientError(err)
+            })?;
+
+        Ok(AsyncVerifier {
+            client,
             config,
-        }
+        })
     }
 
     pub fn verify<S>(&mut self, otp: S) -> Result<impl Future<Item=(), Error=YubicoError>>

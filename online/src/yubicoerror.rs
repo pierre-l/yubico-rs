@@ -8,6 +8,8 @@ use std::fmt;
 pub enum YubicoError {
     Network(reqwest::Error),
     HTTPStatusCode(reqwest::StatusCode),
+    HTTPClientError(reqwest::Error),
+    InvalidUserAgent,
     IOError(ioError),
     ChannelError(channelError),
     DecodeError(base64Error),
@@ -34,6 +36,8 @@ impl fmt::Display for YubicoError {
         match *self {
             YubicoError::Network(ref err) => write!(f, "Connectivity error: {}", err),
             YubicoError::HTTPStatusCode(code) => write!(f, "Error found: {}", code),
+            YubicoError::HTTPClientError(ref error) => write!(f, "Could not build the HTTP client: {}", error),
+            YubicoError::InvalidUserAgent => write!(f, "Invalid user agent"),
             YubicoError::IOError(ref err) => write!(f, "IO error: {}", err),
             YubicoError::ChannelError(ref err) => write!(f, "Channel error: {}", err),
             YubicoError::DecodeError(ref err) => write!(f, "Decode  error: {}", err),
@@ -70,6 +74,8 @@ impl StdError for YubicoError {
         match *self {
             YubicoError::Network(ref err) => err.description(),
             YubicoError::HTTPStatusCode(_) => "200 not received",
+            YubicoError::HTTPClientError(ref err) => err.description(),
+            YubicoError::InvalidUserAgent => "Invalid user agent",
             YubicoError::IOError(ref err) => err.description(),
             YubicoError::ChannelError(ref err) => err.description(),
             YubicoError::DecodeError(ref err) => err.description(),
