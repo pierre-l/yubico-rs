@@ -38,6 +38,7 @@ impl SyncVerifier {
         headers.insert(USER_AGENT, value);
 
         let client = ClientBuilder::new()
+            .timeout(config.request_timeout)
             .default_headers(headers)
             .build()
             .map_err(|err|{
